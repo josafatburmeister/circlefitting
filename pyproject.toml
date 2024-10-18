@@ -1,0 +1,65 @@
+[build-system]
+requires = ["setuptools >=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "circlefitting"
+version = "1.0.0"
+authors = [
+    {name = "Josafat-Mattias Burmeister", email = "burmeister@uni-potsdam.de"},
+]
+description = "A circle fitting library."
+license = { file = "LICENSE" }
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+keywords = ["circle fitting", "data science"]
+requires-python = ">=3.9"
+dependencies = [
+    "eigenpip",
+    "numpy"
+]
+[project.optional-dependencies]
+dev = [
+    "black",
+    "coverage",
+    "coverage-badge",
+    "mypy",
+    "parameterized",
+    "pylint",
+    "pytest",
+]
+docs = [
+    "sphinx",
+    "sphinx-copybutton",
+    "sphinx-design",
+    "sphinx-docsearch",
+    "sphinxawesome-theme",
+    "sphinx-sitemap",
+    "sphinxcontrib-jsmath",
+    "sphinxcontrib-katex",
+    "sphinxcontrib-napoleon"
+]
+
+[project.urls]
+Homepage = "https://github.com/josafatburmeister/circlefitting"
+
+[tool.bumpver]
+current_version = "1.0.0"
+version_pattern = "MAJOR.MINOR.PATCH"
+commit_message  = "Bump version {old_version} -> {new_version}"
+commit          = true
+tag             = true
+push            = false
+
+[tool.bumpver.file_patterns]
+"pyproject.toml" = ['current_version = "{version}"', 'version = "{version}"']
+"src/circlefitting/__init__.py" = ["""{version}"""]
