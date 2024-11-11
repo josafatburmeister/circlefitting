@@ -1,6 +1,12 @@
 from dataclasses import asdict
+from datetime import datetime
+from importlib import metadata
+import os
+import re
+import subprocess
+from typing import Any, Dict, List
 
-from sphinxawesome_theme import ThemeOptions, __version__
+from sphinxawesome_theme import ThemeOptions
 from sphinxawesome_theme.postprocess import Icons
 
 # Configuration file for the Sphinx documentation builder.
@@ -11,10 +17,14 @@ from sphinxawesome_theme.postprocess import Icons
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = "circlefitting"
-author = "Josafat-Mattias Burmeister"
-copyright = f"2024, {author}."
-release = "1.0.0"
+project = "circle_detection"
+author = ", ".join([name.split(" <")[0] for name in metadata.metadata("circle_detection")["Author-email"].split(", ")])
+copyright = f"{datetime.now().year}, {author}."
+# the package version can be either specified via the env variable CIRCLE_DETECTION_VERSION or read from the installed package
+release = os.environ.get("CIRCLE_DETECTION_VERSION", metadata.version("circle_detection"))
+release_id = f"v{release}" if re.match(r"^\d+\.\d+\.\d+$", release) is not None else release
+summary = metadata.metadata("circle_detection")["Summary"]
+base_url = "https://josafatburmeister.github.io/circle_detection"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -27,25 +37,44 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinxawesome_theme.highlighting",
     "sphinx_design",
+    "sphinx_mdinclude",
     "sphinx_sitemap",
 ]
 
 autodoc_type_aliases = {"ArrayLike": "ArrayLike"}
 default_role = "literal"
-napoleon_custom_sections = []
+napoleon_custom_sections = [
+    ("Parameters for the DBSCAN clustering of trunk points", "params_style"),
+    ("Parameters for the construction and maximum filtering of the canopy height model", "params_style"),
+    ("Parameters for the matching of trunk positions and crown top positions", "params_style"),
+    ("Parameters for the Watershed segmentation", "params_style"),
+    ("Parameters for the region growing segmentation", "params_style"),
+]
 napoleon_use_ivar = True
 nitpicky = True
+nitpick_ignore = [
+    ("py:class", "abc.ABC"),
+    ("py:class", "m"),
+    ("py:class", "numpy.dtype"),
+    ("py:class", "numpy.float64"),
+    ("py:class", "numpy.ndarray"),
+    ("py:class", "pandas.core.frame.DataFrame"),
+    ("py:class", "pandas.DataFrame"),
+    ("py:class", "torch.Tensor"),
+    ("py:class", "torch.Size"),
+]
 python_maximum_signature_line_length = 88
 
 # Global substitutions for reStructuredText files
 substitutions = [
     f".. |product| replace:: {project}",
+    f".. |summary| replace:: {summary}",
     f".. |current| replace:: {release}",
 ]
 rst_prolog = "\n".join(substitutions)
 
-templates_path = ["apidoc_templates"]
-exclude_patterns = []
+templates_path = ["_templates"]
+exclude_patterns: List[str] = []
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
@@ -53,10 +82,16 @@ exclude_patterns = []
 theme_options = ThemeOptions(
     show_prev_next=True,
     awesome_external_links=True,
-    main_nav_links={"Docs": "/circlefitting/index"},
+    main_nav_links={
+        "Docs": f"/circle_detection/{release_id}/index",
+        "Changelog": f"/circle_detection/{release_id}/changelog/index",
+        "Development": f"/circle_detection/{release_id}/develop/index",
+    },
+    logo_light="../assets/circle_detection-icon-light-mode.png",
+    logo_dark="../assets/circle_detection-icon-dark-mode.png",
     extra_header_link_icons={
         "repository on GitHub": {
-            "link": "https://github.com/josafatburmeister/circlefitting",
+            "link": "https://github.com/josafatburmeister/circle_detection",
             "icon": (
                 '<svg height="26px" style="margin-top:-2px;display:inline" '
                 'viewBox="0 0 45 44" '
@@ -93,13 +128,39 @@ html_use_index = False
 html_domain_indices = False
 html_copy_source = False
 html_logo = ""
-html_favicon = ""
+html_favicon = "../assets/circle_detection-favicon-128x128.png"
 html_permalinks_icon = Icons.permalinks_icon
-html_baseurl = "https://josafatburmeister.github.io/circlefitting/"
-html_extra_path = ["robots.txt", "_redirects"]
+html_baseurl = f"{base_url}/{release_id}"
+html_extra_path = ["robots.txt"]
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_static"]
-html_css_files = ["autoclass.css"]
+html_css_files = [
+    "autoclass.css",
+    "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=keyboard_arrow_down",
+]
+
+html_sidebars: dict[str, list[str]] = {
+    "*": ["sidebar_main_nav_links.html", "localtoc.html", "version.html"],
+    "changelog/*": ["sidebar_main_nav_links.html"],
+    "develop/*": ["sidebar_main_nav_links.html"],
+}
+html_additional_pages = {"versions": "versions.html"}
+
+html_context: Dict[str, Any] = {
+    "current_version": release,
+    "base_url": base_url,
+    "versions": [("main (unstable)", f"{base_url}/main")],
+}
+
+git_ls_tags_result = subprocess.run(["git", "tag", "-l", "v*.*.*"], capture_output=True, text=True)
+version_tags = [version_tag for version_tag in git_ls_tags_result.stdout.split("\n") if version_tag.startswith("v")]
+version_tags.sort(reverse=True)
+
+for idx, version_tag in enumerate(version_tags):
+    version_url = f"{base_url}/{version_tag}"
+    if idx == 0:
+        version_tag = f"{version_tag} (stable)"
+    html_context["versions"].append((version_tag, version_url))
