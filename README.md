@@ -2,7 +2,7 @@
 
 ### A Python Package for Detecting Circles in 2D Point Sets.
 
-![pypi-image](https://badge.fury.io/py/circle_detection.svg)
+![pypi-image](https://badge.fury.io/py/circle-detection.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![CI](https://github.com/josafatburmeister/circle_detection/actions/workflows/code-quality-main.yml/badge.svg)](https://github.com/josafatburmeister/circle_detection/actions/workflows/code-quality-main.yml)
 [![coverage](https://codecov.io/gh/josafatburmeister/circle_detection/branch/main/graph/badge.svg)](https://codecov.io/github/josafatburmeister/circle_detection?branch=main)
