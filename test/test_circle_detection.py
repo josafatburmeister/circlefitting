@@ -142,8 +142,9 @@ class TestCircleDetection:
         xy = self._generate_circle_points(
             original_circles, min_points=100, max_points=100, variance=np.array([0, 0.05])
         )
+        bandwidth = 0.05
 
-        detected_circles, fitting_losses = detect_circles(xy, bandwidth=0.05, max_circles=1)
+        detected_circles, fitting_losses = detect_circles(xy, bandwidth=bandwidth, max_circles=1)
 
         assert len(detected_circles) == 1
         assert len(fitting_losses) == 1
@@ -152,12 +153,20 @@ class TestCircleDetection:
         np.testing.assert_array_equal(original_circles[0], detected_circles[0])
 
         detected_circles, fitting_losses = detect_circles(
-            xy, bandwidth=0.05, max_circles=2, non_maximum_suppression=True
+            xy, bandwidth=bandwidth, max_circles=2, non_maximum_suppression=True
         )
 
         assert len(detected_circles) == 2
         assert len(fitting_losses) == 2
+
+        expected_fitting_losses = []
+        for circle in detected_circles:
+            residuals = (np.linalg.norm(xy - circle[:2], axis=-1) - circle[2]) / bandwidth
+            expected_loss = -1 / np.sqrt(2 * np.pi) * np.exp(-1 / 2 * residuals**2)
+            expected_fitting_losses.append(expected_loss.mean())
+
         assert (np.abs(original_circles - detected_circles) < 0.03).all()
+        np.testing.assert_almost_equal(expected_fitting_losses, fitting_losses, decimal=5)
 
     def test_several_noisy_circles(self):
         original_circles = self._generate_circles(
