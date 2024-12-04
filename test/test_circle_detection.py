@@ -163,7 +163,7 @@ class TestCircleDetection:
         for circle in detected_circles:
             residuals = (np.linalg.norm(xy - circle[:2], axis=-1) - circle[2]) / bandwidth
             expected_loss = -1 / np.sqrt(2 * np.pi) * np.exp(-1 / 2 * residuals**2)
-            expected_fitting_losses.append(expected_loss.sum())
+            expected_fitting_losses.append(expected_loss.mean())
 
         assert (np.abs(original_circles - detected_circles) < 0.03).all()
         np.testing.assert_almost_equal(expected_fitting_losses, fitting_losses, decimal=5)
