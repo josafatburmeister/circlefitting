@@ -373,6 +373,7 @@ def detect_circles(  # pylint: disable=too-many-arguments, too-many-positional-a
     if max_circles is not None:
         sorting_indices = np.argsort(fitting_losses)
         detected_circles = detected_circles[sorting_indices]
+        fitting_losses = fitting_losses[sorting_indices]
         detected_circles = detected_circles[:max_circles]
         fitting_losses = fitting_losses[:max_circles]
 
