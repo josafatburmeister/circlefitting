@@ -202,7 +202,7 @@ class TestCircleDetection:
             max_iterations=1000,
             deduplication_precision=3,
             non_maximum_suppression=True,
-            min_fitting_score=0.05,
+            min_fitting_score=5,
         )
 
         assert len(original_circles) == len(detected_circles)
