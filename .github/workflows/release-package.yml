@@ -51,6 +51,12 @@ jobs:
           ref: ${{ github.sha }}
       - name: Force correct release branch on workflow sha
         run: git checkout -B ${{ github.ref_name }} ${{ github.sha }}
+      # to build the package, a preview of the released version is created but not committed
+      - name: Create release preview
+        run: |
+          python -m pip install --upgrade pip
+          pip install build wheel python-semantic-release
+          semantic-release version --no-commit
       - name: Set up Homebrew
         if: ${{ startsWith(matrix.buildplat[0], 'macos') }}
         uses: Homebrew/actions/setup-homebrew@master
@@ -102,6 +108,12 @@ jobs:
         uses: actions/setup-python@v3
         with:
           python-version: '3.13'
+      # to build the package, a preview of the released version is created but not committed
+      - name: Create release preview
+        run: |
+          python -m pip install --upgrade pip
+          pip install build wheel python-semantic-release
+          semantic-release version --no-commit
       - name: Install build dependencies
         run: |
           python -m pip install --upgrade pip
