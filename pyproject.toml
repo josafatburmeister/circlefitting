@@ -62,7 +62,9 @@ Issues = "https://github.com/josafatburmeister/circle_detection/issues"
 Changelog = "https://josafatburmeister.github.io/circle_detection/changelog"
 
 [tool.semantic_release]
-version_variable = "pyproject.toml:version"
+version_toml = [
+    "pyproject.toml:project.version"
+]
 branch = "(main|ci/fix_release_pipeline)"
 changelog_file = "CHANGELOG.md"
 build_command = "python -m build"
