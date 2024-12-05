@@ -63,6 +63,6 @@ Changelog = "https://josafatburmeister.github.io/circle_detection/changelog"
 
 [tool.semantic_release]
 version_variable = "pyproject.toml:version"
-branch = "*"
+branch = "(main|ci/fix_release_pipeline)"
 changelog_file = "CHANGELOG.md"
 build_command = "python -m build"
