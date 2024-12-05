@@ -50,7 +50,7 @@ def circumferential_completeness_index(
 
     for idx, circle in enumerate(circles):
         centered_points = xy - circle[:2]
-        radii = np.linalg.norm(centered_points, axis=-1)  # type: ignore[attr-defined]
+        radii = np.linalg.norm(centered_points, axis=-1)
 
         if max_dist is None:
             circle_points = centered_points[np.logical_and(radii >= 0.7 * circle[2], radii <= 1.3 * circle[2])]
