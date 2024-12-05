@@ -146,6 +146,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install build wheel python-semantic-release
       - name: Create release
+        id: release
         run: |
           git config --global --add safe.directory $(realpath .)
           semantic-release version
