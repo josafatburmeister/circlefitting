@@ -161,7 +161,7 @@ jobs:
         id: release
         run: |
           git config --global --add safe.directory $(realpath .)
-          semantic-release version
+          semantic-release version --skip-build
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Publish package to TestPyPI
